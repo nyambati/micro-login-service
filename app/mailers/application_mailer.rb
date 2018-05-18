@@ -1,4 +1,4 @@
 class ApplicationMailer < ActionMailer::Base
-  default from: 'from@example.com'
-  layout 'mailer'
+  default from: "notifications@andela.com"
+  layout "mailer", except: :notify_access_token
 end
