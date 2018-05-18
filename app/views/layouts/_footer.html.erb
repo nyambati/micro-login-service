@@ -1,0 +1,55 @@
+<style>
+   .main-body {
+   display: flex;
+   min-height: 100vh;
+   flex-direction: column;
+   }
+   .main-content {
+   flex: 1;
+   overflow-y: scroll;
+   }
+   @media only screen and (max-width: 1500px) {
+   .mdl-mini-footer {
+   padding-top: 15px !important;
+   padding-bottom: 15px !important;
+   }
+   }
+   footer {
+   position: fixed;
+   bottom: 0;
+   width: 100%;
+   background-color: #fff !important;
+   margin-top: 10px !important;
+   z-index: 1;
+   }
+   footer .brand-logo-on-footer {
+   background-image: url(<%= image_path 'logoo.png' %>);
+   width: 120px;
+   height: 100%;
+   background-size: contain;
+   background-repeat: no-repeat;
+   background-position-y: center;
+   margin-left: 40px;
+   }
+   footer .copyright {
+   margin-right: 40px;
+   font-family: DINPro-Light !important;
+   }
+   @media screen and (max-width: 550px) {
+   footer .brand-logo-on-footer {
+   margin-left: unset;
+   }
+   footer .copyright {
+   margin-right: unset;
+   }
+   }
+</style>
+<footer class="mdl-mini-footer">
+   <div class="mdl-mini-footer__left-section">
+      <div class="mdl-logo brand-logo-on-footer">
+      </div>
+   </div>
+   <div class="mdl-mini-footer__right-section copyright">
+      &copy;2018 All Rights Reserved.
+   </div>
+</footer>

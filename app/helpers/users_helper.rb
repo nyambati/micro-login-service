@@ -1,4 +1,5 @@
 require "generate_token"
+
 module UsersHelper
   def role_exists?
     role = Role.find_by_name(user_params["role"])
@@ -19,19 +20,26 @@ module UsersHelper
   end
 
   def setup_users(users)
-    response = { skiped: [], created: [] }
-    users.each do |email|
+    response = { skiped: [], created: [], info: [] }
+    users.each do |user|
       password = SecureRandom.hex(32)
-      user = User.new(email: email, password: password,
+      user = User.new(email: user["email"], password: password,
+                      firstname: user["firstname"], lastname: user["lastname"],
                       password_confirmation: password)
 
       begin
+        if User.exists?(email: user["email"])
+          user = User.find_by_email(user["email"])
+          set_role(user)
+          response[:info] << "Role (Re)assigned to '#{user['email']}'"
+          next
+        end
         user.save!
         set_role(user)
         GenerateToken.generate_and_send_token_to(user)
-        response[:created] << email
-      rescue StandardError
-        response[:skiped] << email
+        response[:created] << user["email"]
+      rescue StandardError => e
+        response[:skiped] << { user["email"] => e.message }
         next
       end
     end
@@ -40,12 +48,19 @@ module UsersHelper
 
   def generate_user_token(user)
     redirect_unconfirmed(user)
-    auth_token = JsonWebToken.encode(UserInfo: {
-                                       user_id: user.id,
-                                       email: user.email,
-                                       roles: user.roles.pluck(:name),
-                                       domain: user.roles.pluck(:domain)
-                                     })
+    user_roles = {}
+    auth_token = JsonWebToken.encode(
+      UserInfo: {
+        id: user.id,
+        email: user.email,
+        first_name: user.firstname.titleize,
+        last_name: user.lastname.titleize,
+        name: "#{user.firstname.titleize} #{user.lastname.titleize}",
+        picture: "http://identicon-1132.appspot.com/#{user.firstname}",
+        roles: get_all_roles(user),
+        domains: user.roles.pluck(:domain)
+      }
+    )
     json_response(auth_token: auth_token)
   end
 
@@ -63,6 +78,14 @@ module UsersHelper
     end
   end
 
+  def get_all_roles(user)
+    user_roles = {}
+    user.roles.each do |role|
+      user_roles[role.name] = role.id
+    end
+    user_roles
+  end
+
   def redirect_unconfirmed(user)
     if user.confirmed_at?
       true
@@ -75,13 +98,14 @@ module UsersHelper
     data = request.env["omniauth.auth"][:info]
     {
       UserInfo: {
+        id: user.id,
         first_name: data[:first_name],
         last_name: data[:last_name],
+        name: "#{data[:first_name]} #{data[:last_name]}",
         email: data[:email],
-        image: data[:image],
-        roles: user.roles.pluck(:name),
-        domain: user.roles.pluck(:domain),
-        user_id: user.id
+        picture: data[:image],
+        roles: get_all_roles(user),
+        domains: user.roles.pluck(:domain)
       }
     }
   end

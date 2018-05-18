@@ -32,7 +32,6 @@ group :development, :test do
   gem 'factory_bot_rails', '~> 4.0'
   gem 'rspec-rails', '~> 3.7'
   gem 'rubocop', '~> 0.50.0', require: false
-
 end
 
 group :development do
@@ -53,11 +52,13 @@ group :test do
   gem 'simplecov-console', require: false
 end
 
+# Use serializer to return whats neccessary from the db
 gem 'active_model_serializers'
 
 # Use pg as the database for Active Record
 gem 'pg'
 
+# needed by the asset pipeline
 gem 'sass-rails'
 gem 'uglifier'
 gem 'coffee-rails'

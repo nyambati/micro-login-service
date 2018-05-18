@@ -10,6 +10,7 @@
 				-webkit-text-size-adjust:none;
 				-webkit-text-resize:100%;
 				text-resize:100%;
+				color: #888;
 			}
 			a{
 				outline:none;
@@ -106,26 +107,42 @@
                           								<a href="andela.com"><%= image_tag "https://3xyh3sqxv063a8xzo5uk2zn1-wpengine.netdna-ssl.com/wp-content/uploads/2016/01/Andela-logo-landscape-blue-400px.png",
 														style:
 															"vertical-align:top;vertical-align: top;
-															height: 100px;
+															height: 30px;
+															float: left;
 															border-radius: 5px;", alt:"Andela logo" %>
 														</a>
 													</td>
 												</tr>
 												<tr>
-													<td data-color="text" data-size="size text" data-min="10" data-max="26" data-link-color="link text color" data-link-style="font-weight:bold; text-decoration:underline; color:#40aceb;" align="center" style="font:16px/29px Arial, Helvetica, sans-serif; color:#888; padding:0 0 21px;">
-                            						Hi <%= @user.email.split('@').first %>
+													<td data-color="text" data-size="size text" data-min="10" data-max="26" data-link-color="link text color" data-link-style="font-weight:bold; text-decoration:underline; color:#40aceb;" align="center" style="font:16px/29px Arial, Helvetica, sans-serif; color:#888; padding:0 0 21px; text-align:left;">
+                            						Hi <%= @user.firstname.titleize %>,<br>
 														<%=yield %>
 													</td>
 												</tr>
 												<tr>
 													<td style="padding:0 0 20px;">
-														<table width="232" align="center" style="margin:0 auto;" cellpadding="0" cellspacing="0">
+														<table width="140" align="center" style="margin:0 auto;" cellpadding="0" cellspacing="0">
 															<tr>
-																<td data-bgcolor="bg-button" data-size="size button" data-min="10" data-max="20" class="btn" align="center" style="font:bold 16px/18px Arial, Helvetica, sans-serif; color:#f9f9f9; text-transform:uppercase; mso-padding-alt:22px 10px; border-radius:3px;" bgcolor="#3458df">
-                                  								<%= link_to "Link", @url, target: "_blank", style: "text-decoration:none; color:#f9f9f9; display:block; padding:22px 10px;" %>
+																<td data-bgcolor="bg-button" data-size="size button" data-min="10" data-max="20" class="btn" align="center" style="font:15px/18px Arial, Helvetica, sans-serif; color:#f9f9f9; mso-padding-alt:22px 10px; border-radius:3px;" bgcolor="#3459db">
+																<% if @reset_link %>
+																    <%= link_to @reset_link, @url, target: "_blank", style: "text-decoration:none; color:#f9f9f9; display:block; padding:10px 10px;" %>
+																<% else%>
+                                  									<%= link_to "Get started", @url, target: "_blank", style: "text-decoration:none; color:#f9f9f9; display:block; padding:10px 10px;" %>
+																<% end %>
 																</td>
 															</tr>
 														</table>
+													</td>
+												</tr>
+												<tr>
+													<td data-color="text" data-size="size text" data-min="10" data-max="26" data-link-color="link text color" data-link-style="text-decoration:underline; color:#40aceb;" align="center" style="font:15px/29px Arial, Helvetica, sans-serif; color:#888; padding:0 0 21px; text-align:left;">
+													<% if @reset_link %>
+														Thanks<br>
+													<% else %>
+														Welcome aboard.🎉<br>
+													<% end %>
+														<em>The Andela Guest Service Team<br>
+
 													</td>
 												</tr>
 											</table>

@@ -6,8 +6,8 @@ RSpec.describe "shows page logo", type: :feature do
   include UsersSpecHelper
   it "shows invites" do
     visit "/invites"
-    expect(page).to have_content "Andela Guest Setup"
-    click_button "Request New Link"
+    expect(page).to have_content "Andela Guest Service"
+    click_button "Submit"
     expect(page).to have_content "Sorry record not found"
   end
 end

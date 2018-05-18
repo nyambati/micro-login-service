@@ -5,6 +5,7 @@ module ExceptionHandler
     rescue_from ActiveRecord::RecordInvalid, with: :render_unprocessable_entity_response
     rescue_from ActiveRecord::RecordNotFound, with: :render_not_found_response
     rescue_from ActionController::ParameterMissing, with: :parameter_missing_response
+
     def render_unprocessable_entity_response(e)
       json_response({ message: e.record.errors }, :unprocessable_entity)
     end

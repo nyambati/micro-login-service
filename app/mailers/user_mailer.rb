@@ -10,9 +10,10 @@ class UserMailer < ApplicationMailer
   def forgot_mail
     @user = params[:user]
     token = params[:token]
+    @reset_link = "Reset password"
     @url =
       "#{ActionMailer::Base.default_url_options[:host]}/invites?token=#{token}"
-    mail(to: @user.email, subject: "Setup Password")
+    mail(to: @user.email, subject: "Reset Password")
   end
 
   def notify_access_token

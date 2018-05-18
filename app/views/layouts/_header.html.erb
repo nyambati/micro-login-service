@@ -1,0 +1,56 @@
+<style>
+   .header-container {
+   position: fixed;
+   top: 0;
+   left: 0;
+   width: 100%;
+   z-index: 2;
+   }
+   .header {
+   background-color: #fff;
+   height: 69px;
+   padding: 0 60px;
+   box-sizing: border-box;
+   display: inline-block;
+   width: 100%;
+   float: left;
+   text-align: left;
+   }
+   .brand-logo {
+   background-image: url(<%= image_path 'logoo.png' %>);
+   width: 120px;
+   height: 100%;
+   background-size: contain;
+   background-repeat: no-repeat;
+   background-position-y: center;
+   display: inline-block;
+   }
+   .header-right {
+   height: 100%;
+   display: inline-flex;
+   }
+   .header-right >* {
+   align-self: center;
+   margin: 0 17px;
+   height: 30px;
+   }
+   .mobile-view-container {
+   display: none;
+   }
+</style>
+<section class="header-container-on-mobile-view">
+   <div class="header-on-mobile-view">
+      <div class="header-left">
+         <div class="mobile-view-container"></div>
+         <a class="brand-logo-on-mobile-view" href="/invites"></a>
+      </div>
+      <div class="header-right"></div>
+   </div>
+   </div>
+</section>
+<section class="header-container">
+   <div class="header">
+      <a class="brand-logo" href="/invites"></a>
+      <div class="pull-right header-right"></div>
+   </div>
+</section>

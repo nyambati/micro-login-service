@@ -1,10 +1,15 @@
 require "jwt"
 
 class JsonWebToken
-  @rsa_private = OpenSSL::PKey::RSA.generate 2048
+  @rsa_private = if Rails.env.production?
+                   OpenSSL::PKey::RSA.new ENV["PRIVATE_KEY"]
+                 else
+                   OpenSSL::PKey::RSA.generate 2048
+                 end
+
   @rsa_public = @rsa_private.public_key
 
-  def self.encode(payload, exp = 24.hours.from_now)
+  def self.encode(payload, exp = 7.days.from_now)
     payload[:exp] = exp.to_i
     payload.reverse_merge!(meta)
     JWT.encode payload, @rsa_private, "RS256"

@@ -16,11 +16,11 @@ class Message
   end
 
   def self.not_present
-    "email not present"
+    "Email address not present."
   end
 
   def self.do_not_match
-    "passwords do not match. please try again"
+    "Passwords do not match. Please try again"
   end
 
   def self.fake_role

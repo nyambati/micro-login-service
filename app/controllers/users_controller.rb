@@ -2,7 +2,9 @@ class UsersController < ApplicationController
   include UsersHelper
 
   before_action :authenticate_request!, except: %i(login google_login create)
-  before_action ->(param = params[:access_token]) { authenticate_with_access_token! param }, only: %i(create)
+  before_action ->(param = params[:access_token]) do
+    authenticate_with_access_token! param
+  end, only: %i(create)
   before_action :set_user, only: %i(show update destroy)
 
   def index
@@ -13,10 +15,10 @@ class UsersController < ApplicationController
   def create
     response = { error: Message.invalid_input }
     if !role_exists?
-      json_response({ message: Message.fake_role }, :bad_request)
+      json_response({ message: Message.invalid_input }, :bad_request)
     else
-      emails = user_params["emails"]
-      response = setup_users(emails) unless emails.blank?
+      users = user_params["users"]
+      response = setup_users(users) unless users.blank?
       json_response(response, :created)
     end
   end
@@ -53,7 +55,9 @@ class UsersController < ApplicationController
   def google_login
     redirect_url = request.env["omniauth.params"]["redirect_url"]
     if andela_mail?
-      redirect_to("https://api-prod.andela.com/login?redirect_url=#{redirect_url}") && return
+      redirect_to(
+        "https://api-prod.andela.com/login?redirect_url=#{redirect_url}"
+      ) && return
     end
     email = request.env["omniauth.auth"][:info][:email]
     user = User.find_by_email(email)
@@ -79,7 +83,7 @@ class UsersController < ApplicationController
       :redirect_url,
       :state, :code, :provider,
       :role, :password, :access_token,
-      :email, emails: []
+      :email, users: %i(firstname lastname email)
     )
   end
 end

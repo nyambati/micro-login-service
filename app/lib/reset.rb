@@ -1,4 +1,5 @@
 require "generate_token"
+
 class Reset
   include ResetResponse
 
@@ -52,6 +53,7 @@ class Reset
   def reset_password(params)
     check_email_presence(params)
     user = get_user(params[:token])
+
     if user.present? && user.confirmation_token_valid?(params[:token])
       check_passwords_match user, params
     else

@@ -1,5 +1,6 @@
+require "reset"
+
 class PasswordsController < ApplicationController
-  require "reset"
   def forgot
     render Reset.new.forgot_password(params)
   end

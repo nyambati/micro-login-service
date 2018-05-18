@@ -6,7 +6,11 @@ RSpec.describe "UserApi", type: :request do
   include UsersSpecHelper
   let!(:users) { create_list(:user, 10) }
   let(:user_id) { users.first.id }
-  let(:parameters) { { emails: ["sir3n.sn@gmail.com"], role: "admin" } }
+  let(:parameters) do
+    { users: [{ email: "sir3n.sn@gmail.com",
+                first_name: "kali",
+                last_name: "dhul" }], role: "admin" }
+  end
   let(:user) { create_admin }
   let(:header) do
     { "Authorization" => token_generator(UserInfo: { email: user.email }) }
@@ -59,7 +63,7 @@ RSpec.describe "UserApi", type: :request do
 
       it "returns user object " do
         expect(json).not_to be_empty
-        expect(json.size).to eq(2)
+        expect(json.size).to eq(3)
       end
 
       it "returns status code 201" do

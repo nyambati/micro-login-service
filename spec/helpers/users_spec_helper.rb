@@ -5,7 +5,10 @@ module UsersSpecHelper
   end
 
   def create_admin
-    user = User.new(email: "kali@gmail.com", password: "kali2017")
+    user = User.new(
+      email: "kali@gmail.com", password: "kali2017",
+      firstname: "dhul", lastname: "husni"
+    )
     role = Role.new(name: "admin", domain: "https://www.google.com")
     user.save!
     user.assignments.create(role: role)
