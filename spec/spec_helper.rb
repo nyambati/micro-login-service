@@ -13,6 +13,19 @@
 # it.
 #
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
+require 'simplecov'
+require 'coveralls'
+require 'simplecov-console'
+
+Coveralls.wear!
+SimpleCov.formatter = SimpleCov::Formatter::MultiFormatter.new(
+  [
+    SimpleCov::Formatter::Console,
+    # Want a nice code coverage website? Uncomment this next line!
+    # SimpleCov::Formatter::HTMLFormatter
+  ]
+)
+SimpleCov.start
 RSpec.configure do |config|
   # rspec-expectations config goes here. You can use an alternate
   # assertion/expectation library such as wrong or the stdlib/minitest
@@ -36,6 +49,10 @@ RSpec.configure do |config|
     # `true` in RSpec 4.
     mocks.verify_partial_doubles = true
   end
+
+  config.disable_monkey_patching!
+  config.order = :random
+  Kernel.srand config.seed
 
   # This option will default to `:apply_to_host_groups` in RSpec 4 (and will
   # have no way to turn it off -- the option exists only for backwards
