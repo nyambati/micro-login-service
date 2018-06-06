@@ -1,0 +1,11 @@
+# pipeline configuration
+Jenkinsfile
+
+# dynamically created files
+deployment.yml
+secrets.yml
+service.yml
+
+# scripts and Dockerfiles not used
+jenkins_ci/jenkins_scripts/
+jenkins_ci/jenkins_image/
