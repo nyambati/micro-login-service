@@ -260,7 +260,7 @@ build_docker_image_and_deploy(){
 
     # create an account.json file for use within the docker image being built
     cat ${SERVICE_KEY} > account.json
-    sudo /usr/bin/docker build --build-arg google_client_id=${GOOGLE_CLIENT_ID} --build-arg private_key=${PRIVATE_KEY} -t gcr.io/${PROJECT_ID}/login-microservice:$GIT_COMMIT .
+    sudo /usr/bin/docker build --build-arg google_client_id=${GOOGLE_CLIENT_ID} --build-arg private_key="${PRIVATE_KEY}" -t gcr.io/${PROJECT_ID}/login-microservice:$GIT_COMMIT .
 
     # only create the deployment if it does not already exist, otherwise
     # push the image, and set the latest image in the deployment
