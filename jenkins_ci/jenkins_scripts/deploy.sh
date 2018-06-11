@@ -265,14 +265,14 @@ build_docker_image_and_deploy(){
     # only create the deployment if it does not already exist, otherwise
     # push the image, and set the latest image in the deployment
     if kubectl get deployments login-service-${RAILS_ENV}; then
-      sudo /home/jenkins/google-cloud-sdk/bin/gcloud docker -- push gcr.io/${PROJECT_ID}/login-microservice:$GIT_COMMIT
+      /home/jenkins/google-cloud-sdk/bin/gcloud docker -- push gcr.io/${PROJECT_ID}/login-microservice:$GIT_COMMIT
       kubectl set image deployment/login-service-${RAILS_ENV} login-service-${RAILS_ENV}=gcr.io/${PROJECT_ID}/login-microservice:$GIT_COMMIT
     else
 
       # ensure to push the new image if a deployment does not exist and the image
       # also doesn't exist. This is to ensure the deployment has an image to pull
       if ! gcloud container images describe gcr.io/${PROJECT_ID}/login-microservice:$GIT_COMMIT; then
-        sudo /home/jenkins/google-cloud-sdk/bin/gcloud docker -- push gcr.io/${PROJECT_ID}/login-microservice:$GIT_COMMIT
+        /home/jenkins/google-cloud-sdk/bin/gcloud docker -- push gcr.io/${PROJECT_ID}/login-microservice:$GIT_COMMIT
       fi
       kubectl create -f deployment.yml
     fi
