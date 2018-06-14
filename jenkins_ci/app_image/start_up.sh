@@ -28,6 +28,14 @@ setup_ssl(){
     fi
 }
 
+copy_db_files() {
+  if gcloud auth activate-service-account --key-file=account.json; then
+      gsutil cp gs://${BUCKET_NAME}/login_microservice_databases/vof_login_microservice_production.sql /usr/src/app/vof_login_microservice_production.sql
+      gsutil cp gs://${BUCKET_NAME}/login_microservice_databases/vof_login_microservice_staging.sql /usr/src/app/vof_login_microservice_staging.sql
+      gsutil cp gs://${BUCKET_NAME}/login_microservice_databases/vof_login_microservice_sandbox.sql /usr/src/app/vof_login_microservice_sandbox.sql
+  fi
+}
+
 create_secrets_yml() {
   cat <<EOF > ./config/secrets.yml
 production:
@@ -45,6 +53,7 @@ main() {
 
     echo "start up script invoked at $(date)" >> /tmp/script.log
     setup_ssl
+    copy_db_files
     create_secrets_yml
     start_app
 }

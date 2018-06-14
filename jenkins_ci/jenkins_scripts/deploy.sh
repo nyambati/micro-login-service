@@ -39,9 +39,9 @@ check_out_infrastructure_code() {
     mkdir -p /home/jenkins/vof-repo
 
     if [ "$GIT_BRANCH" == "master" ]; then
-      git clone -b master ${VOF_INFRASTRUCTURE_REPO} /home/jenkins/vof-repo
+      git clone -b login-master ${VOF_INFRASTRUCTURE_REPO} /home/jenkins/vof-repo
     else
-      git clone -b develop ${VOF_INFRASTRUCTURE_REPO} /home/jenkins/vof-repo
+      git clone -b login-develop ${VOF_INFRASTRUCTURE_REPO} /home/jenkins/vof-repo
     fi
 }
 
