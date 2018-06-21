@@ -8,7 +8,7 @@ declare_env_variables() {
   RESERVED_IP=${STAGING_RESERVED_IP}
   RAILS_ENV="staging"
 
-  if [ "$GIT_BRANCH" == 'ft-fix-prod-deployments' ]; then
+  if [ "$GIT_BRANCH" == 'master' ]; then
     RESERVED_IP=${PRODUCTION_RESERVED_IP}
     BUGSNAG_KEY=${PRODUCTION_BUGSNAG_KEY}
     RAILS_ENV="production"
@@ -131,8 +131,7 @@ data:
     GMAIL_USERNAME: '$(echo -n ${GMAIL_USERNAME} | base64)'
     GMAIL_PASSWORD: '$(echo -n ${GMAIL_PASSWORD} | base64)'
     GOOGLE_CLIENT_SECRET: '$(echo -n ${GOOGLE_CLIENT_SECRET} | base64)'
-    DOMAIN_PRODUCTION: '$(echo -n ${DOMAIN_PRODUCTION} | base64)'
-    DOMAIN_STAGING: '$(echo -n ${DOMAIN_STAGING} | base64)'
+    DOMAIN: '$(echo -n ${DOMAIN} | base64)'
     RAILS_ENV: '$(echo -n ${RAILS_ENV} | base64)'
 EOF
 }
@@ -227,16 +226,11 @@ spec:
               secretKeyRef:
                   name: vof-${RAILS_ENV}-login-microservice-secrets
                   key: GOOGLE_CLIENT_SECRET
-          - name: DOMAIN_PRODUCTION
+          - name: DOMAIN
             valueFrom:
               secretKeyRef:
                   name: vof-${RAILS_ENV}-login-microservice-secrets
-                  key: DOMAIN_PRODUCTION
-          - name: DOMAIN_STAGING
-            valueFrom:
-              secretKeyRef:
-                  name: vof-${RAILS_ENV}-login-microservice-secrets
-                  key: DOMAIN_STAGING
+                  key: DOMAIN
           - name: RAILS_ENV
             valueFrom:
               secretKeyRef:

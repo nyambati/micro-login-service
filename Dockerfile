@@ -14,13 +14,12 @@ COPY . .
 
 
 RUN apt-get update && apt-get install -y --no-install-recommends apt-utils && \
-apt-get install nodejs postgresql postgresql-contrib  -y && \
+apt-get install nodejs -y && \
 curl https://dl.google.com/dl/cloudsdk/release/google-cloud-sdk.tar.gz > /tmp/google-cloud-sdk.tar.gz && \
 mkdir -p /usr/local/gcloud && \
 tar -C /usr/local/gcloud -xf /tmp/google-cloud-sdk.tar.gz && \
 /usr/local/gcloud/google-cloud-sdk/install.sh && \
-/usr/local/gcloud/google-cloud-sdk/bin/gcloud components install beta --quiet && \
-/etc/init.d/postgresql start
+/usr/local/gcloud/google-cloud-sdk/bin/gcloud components install beta --quiet
 
 ENV PATH $PATH:/usr/local/gcloud/google-cloud-sdk/bin
 

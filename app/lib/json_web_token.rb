@@ -2,7 +2,7 @@ require "jwt"
 
 class JsonWebToken
   @rsa_private = if Rails.env.production?
-                   OpenSSL::PKey::RSA.new(ENV["PRIVATE_KEY"].gsub("\\n", "\n"))
+                   OpenSSL::PKey::RSA.new ENV["PRIVATE_KEY"]
                  else
                    OpenSSL::PKey::RSA.generate 2048
                  end

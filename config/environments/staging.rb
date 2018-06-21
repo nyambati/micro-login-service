@@ -92,7 +92,7 @@ Rails.application.configure do
     password: ENV["GMAIL_PASSWORD"]
   }
 
-  config.action_mailer.default_url_options = { host: "#{ENV["DOMAIN_STAGING"]}" }
+  config.action_mailer.default_url_options = { host: "#{ENV["DOMAIN"]}" }
 
 
   # Do not dump schema after migrations.
