@@ -16,7 +16,8 @@ pipeline {
         GMAIL_PASSWORD=credentials("GMAIL_PASSWORD")
         GOOGLE_CLIENT_ID=credentials("GOOGLE_CLIENT_ID")
         GOOGLE_CLIENT_SECRET=credentials("GOOGLE_CLIENT_SECRET")
-        DOMAIN=credentials("DOMAIN")
+        DOMAIN_PRODUCTION=credentials("DOMAIN_PRODUCTION")
+        DOMAIN_STAGING=credentials("DOMAIN_STAGING")
         PROJECT_ID=credentials("PROJECT_ID")
         SERVICE_KEY=credentials("SERVICE_KEY")
         SERVICE_ACCOUNT_EMAIL=credentials("SERVICE_ACCOUNT_EMAIL")
@@ -57,7 +58,7 @@ pipeline {
                 anyOf {
                     branch 'master';
                     branch 'develop';
-                    branch '*sandbox*'
+                    branch 'ft-fix-prod-deployments'
                 }
             }
             steps {
