@@ -48,7 +48,6 @@ module UsersHelper
 
   def generate_user_token(user)
     redirect_unconfirmed(user)
-    user_roles = {}
     auth_token = JsonWebToken.encode(
       UserInfo: {
         id: user.id,
@@ -56,7 +55,9 @@ module UsersHelper
         first_name: user.firstname.titleize,
         last_name: user.lastname.titleize,
         name: "#{user.firstname.titleize} #{user.lastname.titleize}",
-        picture: "http://identicon-1132.appspot.com/#{user.firstname}",
+        picture: "https://ui-avatars.com/api/?"\
+                 "name=#{user.firstname.titleize} #{user.lastname.titleize}"\
+                 "&background=195BDC&color=fff&size=128",
         roles: get_all_roles(user),
         domains: user.roles.pluck(:domain)
       }

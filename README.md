@@ -1,4 +1,8 @@
-# Login Service
+# Guest Login Service
+
+![microservice login flow](https://user-images.githubusercontent.com/32780926/40916035-ea28e4f0-6806-11e8-9cb3-4c0485416c95.jpg)
+
+![micrologin flow 2](https://user-images.githubusercontent.com/32780926/40915981-b12bcdc0-6806-11e8-9406-81c757385d2a.jpg)
 
 #### RSA PUBLIC KEY
 
@@ -13,6 +17,28 @@ Snt70Gtn5rQnkN08DNLfxjiSskzef8pNh+9H5oI7Ee5UJpIOEyQ7p+XzEDzT1zy5
 TQIDAQAB
 -----END PUBLIC KEY-----
 ```
+
+#### Validate JWT Origin Example
+
+```
+ def valid_learner_token(token)
+    cert = OpenSSL::PKey::RSA.new Figaro.env.public_key
+    valid = JWT.decode token, cert, true, algorithm: "RS256"
+    valid ? true : false
+  end
+```
+
+#### Important Endpoints
+
+```
+/invites # For forgot password and setting up
+/users/login # For login with email and password
+/auth/google_oauth2 # For google auth
+```
+
+#### Making Requests From The App
+
+Please generate an access token `/users/generate_access_token` to use to make requests with your app for persistency as JWT expire
 
 An Api login service to login learners and aspiring andelans into andela platforms i.e Vof Tracker
 
@@ -32,7 +58,7 @@ To install PostgreSQL visit [Postgres app](http://postgresapp.com/).
 
 ## Installation
 
-* Once you have Ruby, Rails and PostgreSQL installed. Take the following steps to install the application:
+- Once you have Ruby, Rails and PostgreSQL installed. Take the following steps to install the application:
 
 1.  Run `git clone https://github.com/andela/micro-login-service.git` to clone this repository
 
@@ -54,7 +80,7 @@ GMAIL_USERNAME: 'your gmail username'
 GMAIL_PASSWORD: 'your gmail password'
 GOOGLE_CLIENT_ID: 'your google client id'
 GOOGLE_CLIENT_SECRET: 'your google client secret'
-DOMAIN: 'http://localhost:3000'
+DOMAIN_DEVELOPMENT: 'http://localhost:3000'
 ```
 
 ## Database
@@ -66,24 +92,28 @@ run
 
 ## Tests
 
-* Run test with `rspec spec`
+- Run test with `rspec spec`
 
 ## Limitations
 
-* Login Service is still in development
+- Login Service is still in development
 
 ## Coding Style
 
 Refer to this links below for our coding style:
 
-* https://github.com/bbatsov/ruby-style-guide
-* https://github.com/bbatsov/rails-style-guide
+- https://github.com/bbatsov/ruby-style-guide
+- https://github.com/bbatsov/rails-style-guide
 
 ## How to Contribute
 
-* Fork this repository
-* Clone it.
-* Create your feature branch on your local machine with `git checkout -b your-feature-branch`
-* Push your changes to your remote branch with `git push origin your-feature-branch` ensure you avoid redundancy in your commit messsage.
-* Open a pull request to the `develop` branch and describe how your feature works
-* Refer to this wiki for proper <a href="https://github.com/andela/engineering-playbook/blob/master/conventions.md">GIT CONVENTION</a>
+- Fork this repository
+- Clone it.
+- Create your feature branch on your local machine with `git checkout -b your-feature-branch`
+- Push your changes to your remote branch with `git push origin your-feature-branch` ensure you avoid redundancy in your commit messsage.
+- Open a pull request to the `develop` branch and describe how your feature works
+- Refer to this wiki for proper <a href="https://github.com/andela/engineering-playbook/blob/master/conventions.md">GIT CONVENTION</a>
+
+```
+
+```
