@@ -1,0 +1,144 @@
+default: &defaults
+  docker:
+    - image: circleci/ruby:2.4.1-node-browsers
+    - image: postgres:9.6
+      environment:
+        - POSTGRES_USER: circleci
+        - POSTGRES_DB: circlecidb
+        - POSTGRES_PASSWORD: ''
+  dependencies:
+    pre:
+      - sudo gem install --no-ri --no-rdoc bundler
+  working_directory: ~/vof
+
+cmd_restore_cache: &cmd_restore_cache
+  restore_cache:
+    keys:
+    - vof-dependencies-{{ checksum "Gemfile.lock" }}
+    - vof-dependencies-
+
+cmd_install_dependancies: &cmd_install_dependancies
+  run:
+    name: Install dependencies
+    command: |
+      bundle check --path=vendor/bundle || bundle install --jobs=4 --retry=3 --path=vendor/bundle
+
+cmd_install_dependancies: &cmd_save_cache
+  save_cache:
+    key: vof-dependencies-{{ checksum "Gemfile.lock" }}
+    paths:
+      - ./vendor/bundle
+
+cmd_wait_for_postgres: &cmd_wait_for_postgres
+  run:
+    name: Waiting for Postgres to be ready
+    command: |
+      dockerize -wait tcp://localhost:5432 -timeout 1m
+
+cmd_download_cc_test_reporter: &cmd_download_cc_test_reporter
+  run:
+    name:  Download cc-test-reporter
+    command: |
+      mkdir -p tmp/
+      curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > /tmp/cc-test-reporter
+      chmod +x /tmp/cc-test-reporter
+
+cmd_notify_test_pass: &cmd_notify_test_pass
+  run:
+    name: Notify after Tests Finish Running (passing)
+    command: |
+      export TESTS_STATUS="passing" &&
+      source .circleci/ENV_VARS.sh &&
+      ruby .circleci/ci_test_status.rb &&
+      curl -X POST --data-urlencode \
+      "payload=$(cat .circleci/ci_test_status_report.json)" \
+      "${SLACK_CHANNEL_HOOK}"
+
+cmd_notify_test_fail: &cmd_notify_test_fail
+  run:
+    name: Notify after Tests Finish Running (failing)
+    command: |      
+      echo "fail" > tmp/test_status &&
+      export TESTS_STATUS="failing" &&
+      source .circleci/ENV_VARS.sh &&
+      ruby .circleci/ci_test_status.rb &&
+      curl -X POST --data-urlencode \
+      "payload=$(cat .circleci/ci_test_status_report.json)" \
+      "${SLACK_CHANNEL_HOOK}"
+    when: on_fail
+
+cmd_attach_workspace: &cmd_attach_workspace
+  attach_workspace:
+    at: tmp/
+
+version: 2
+jobs:
+  build:
+    <<: *defaults
+    steps:
+      - checkout
+      - *cmd_restore_cache
+      - *cmd_install_dependancies
+      - *cmd_save_cache
+      - *cmd_wait_for_postgres
+      - run:
+          name: Set up DB
+          command: |
+            bundle exec rake db:create db:schema:load --trace
+            bundle exec rake db:migrate
+          environment:
+            DATABASE_URL: "postgres://circleci@localhost:5432/circlecidb"
+      - run:
+          name: Create build test status file
+          command: |
+            touch tmp/test_status && echo "pass" > tmp/test_status
+            echo ${SERVICE_ACCOUNT} > account.json
+  
+  run_tests:
+    <<: *defaults
+    steps:
+      - checkout
+      - *cmd_restore_cache
+      - *cmd_install_dependancies
+      - *cmd_save_cache
+      - *cmd_wait_for_postgres
+      - *cmd_download_cc_test_reporter
+      - run:
+          name: run tests
+          command: |
+            bundle exec rspec --exclude-pattern "spec/*/*_spec.rb" spec
+      - run:
+          name: format coverage
+          command: |
+            /tmp/cc-test-reporter format-coverage -t simplecov -o tmp/codeclimate.backend.json coverage/backend/.resultset.json
+      - persist_to_workspace:
+          root: tmp/
+          paths:
+            - codeclimate.backend.json
+      - *cmd_notify_test_fail
+
+  upload-coverage:
+    <<: *defaults
+    steps:
+      - checkout
+      - *cmd_download_cc_test_reporter
+      - *cmd_attach_workspace
+      - run:
+          name: Upload coverage results to Code Climate
+          command: |
+            /tmp/cc-test-reporter sum-coverage -p 1 -o /tmp/codeclimate.total.json tmp/codeclimate.*.json
+            /tmp/cc-test-reporter upload-coverage -i /tmp/codeclimate.total.json
+            sed -n -e 24p /tmp/codeclimate.total.json
+      - *cmd_notify_test_pass
+
+workflows:
+  version: 2
+  build_test_and_upload_coverage:
+    jobs:
+      - build
+      - run_tests:
+          requires:
+            - build
+      - upload-coverage:
+          requires:
+            - run_tests
