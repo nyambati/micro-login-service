@@ -40,8 +40,7 @@ pipeline {
                 sh 'chmod 777 ./jenkins_ci/jenkins_scripts/pg-setup.sh'
                 sh './jenkins_ci/jenkins_scripts/pg-setup.sh'
                 sh 'sudo chmod -R 777 /usr/local && bundle install'
-                sh "bundle exec rake db:create"
-                sh "bundle exec rake db:schema:load"
+                sh "bundle exec rails db:setup"
                 sh "bundle exec rake db:migrate"
             }
         }
@@ -58,7 +57,7 @@ pipeline {
                 anyOf {
                     branch 'master';
                     branch 'develop';
-                    branch '*sandbox*'
+                    branch 'ft-fix-prod-deployments'
                 }
             }
             steps {

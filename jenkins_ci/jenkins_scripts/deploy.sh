@@ -8,7 +8,7 @@ declare_env_variables() {
   RESERVED_IP=${STAGING_RESERVED_IP}
   RAILS_ENV="staging"
 
-  if [ "$GIT_BRANCH" == 'master' ]; then
+  if [ "$GIT_BRANCH" == 'ft-fix-prod-deployments' ]; then
     RESERVED_IP=${PRODUCTION_RESERVED_IP}
     BUGSNAG_KEY=${PRODUCTION_BUGSNAG_KEY}
     RAILS_ENV="production"
@@ -81,6 +81,9 @@ authenticate_service_account() {
       gcloud beta container --project "${PROJECT_ID}" clusters create "login-microservice-${RAILS_ENV}-cluster" --zone "europe-west1-b" --username "admin" --cluster-version "1.8.10-gke.0" --machine-type "n1-standard-1" --image-type "COS" --disk-size "100" --scopes "https://www.googleapis.com/auth/compute","https://www.googleapis.com/auth/devstorage.read_only","https://www.googleapis.com/auth/logging.write","https://www.googleapis.com/auth/monitoring","https://www.googleapis.com/auth/servicecontrol","https://www.googleapis.com/auth/service.management.readonly","https://www.googleapis.com/auth/trace.append" --num-nodes "2" --network "default" --enable-cloud-logging --enable-cloud-monitoring --subnetwork "default" --addons HorizontalPodAutoscaling,HttpLoadBalancing,KubernetesDashboard --enable-autorepair
       gcloud container clusters get-credentials login-microservice-${RAILS_ENV}-cluster --zone europe-west1-b --project ${PROJECT_ID}
     fi
+    sudo chmod 777 /var/lib/jenkins/workspace
+    gsutil cp gs://vof-tracker-app/ssl/andela_certificate.crt /var/lib/jenkins/workspace/andela_certificate.crt
+    gsutil cp gs://vof-tracker-app/ssl/andela_key.key /var/lib/jenkins/workspace/andela_key.key
   fi
 }
 
@@ -247,6 +250,10 @@ spec:
               secretKeyRef:
                   name: vof-${RAILS_ENV}-login-microservice-secrets
                   key: BUCKET_NAME
+        - args: 
+            - /login-service-${RAILS_ENV}
+            - "--default-backend-service=$(POD_NAMESPACE)/login-service-${RAILS_ENV}"
+            - "--default-ssl-certificate=$(POD_NAMESPACE)/tls-certificate"
         ports:
         - containerPort: 443
         - containerPort: 80
@@ -263,6 +270,10 @@ build_docker_image_and_deploy(){
     fi
 
     kubectl create -f secrets.yml
+
+    if kubectl create secret tls tls-certificate --key /var/lib/jenkins/workspace/andela_key.key --cert /var/lib/jenkins/workspace/andela_certificate.crt; then
+      echo 'Created tls certificate'
+    fi
 
     # create an account.json file for use within the docker image being built
     cat ${SERVICE_KEY} > account.json
