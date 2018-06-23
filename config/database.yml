@@ -1,8 +1,6 @@
 default: &default
   adapter: postgresql
-  template: template0
   encoding: unicode
-  template: template0
   username: <%= ENV['POSTGRES_USER'] %>
   password: <%= ENV['POSTGRES_PASSWORD'] %>
   pool: 5
@@ -12,10 +10,6 @@ default: &default
 development:
   <<: *default
   database: <%= ENV['POSTGRES_DB'] %>
-
-develop-old:
-  <<: *default
-  database: <%= ENV['POSTGRES_DEV_DB'] %>
 
 # Warning: The database defined as "test" will be erased and
 # re-generated from your development database when you run "rake".
