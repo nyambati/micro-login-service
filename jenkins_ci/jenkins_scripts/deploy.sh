@@ -8,7 +8,7 @@ declare_env_variables() {
   RESERVED_IP=${STAGING_RESERVED_IP}
   RAILS_ENV="staging"
 
-  if [ "$GIT_BRANCH" == 'ft-fix-prod-deployments' ]; then
+  if [ "$GIT_BRANCH" == 'master' ]; then
     RESERVED_IP=${PRODUCTION_RESERVED_IP}
     BUGSNAG_KEY=${PRODUCTION_BUGSNAG_KEY}
     RAILS_ENV="production"
@@ -254,9 +254,21 @@ spec:
             - /login-service-${RAILS_ENV}
             - "--default-backend-service=$(POD_NAMESPACE)/login-service-${RAILS_ENV}"
             - "--default-ssl-certificate=$(POD_NAMESPACE)/tls-certificate"
+            env: 
+              - name: POD_NAME
+                valueFrom: 
+                  fieldRef: 
+                    fieldPath: metadata.name
+              - name: POD_NAMESPACE
+                valueFrom: 
+                  fieldRef: 
+                    fieldPath: metadata.namespace
         ports:
         - containerPort: 443
+          name: https
+          protocol: TCP
         - containerPort: 80
+          name: http
           protocol: TCP
 EOF
 }

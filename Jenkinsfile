@@ -57,7 +57,7 @@ pipeline {
                 anyOf {
                     branch 'master';
                     branch 'develop';
-                    branch 'ft-fix-prod-deployments'
+                    branch '*sandbox*'
                 }
             }
             steps {
