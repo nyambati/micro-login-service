@@ -20,13 +20,15 @@ start_app() {
       else
         copy_db_files
         # Import database dump.
-        export PGPASSWORD=${POSTGRES_PASSWORD}; pg_restore -h ${POSTGRES_HOST} -p 5432 -U ${POSTGRES_USER} -d ${POSTGRES_DB} < /usr/src/app/vof_login_microservice_${RAILS_ENV}.dump
+        export PGPASSWORD=${POSTGRES_PASSWORD}; pg_restore -h ${POSTGRES_HOST} -p 5432 -U ${POSTGRES_USER} -d ${POSTGRES_DB} < /usr/src/app/micro_login_db.dump
       fi
     else
       cd ${app_root} && env RAILS_ENV=${RAILS_ENV} rails db:setup
       cd ${app_root} && env RAILS_ENV=${RAILS_ENV} rails db:seed
     fi
-  RAILS_ENV=${RAILS_ENV} /usr/local/bin/bundle exec puma -b 'ssl://0.0.0.0:3000?key=/usr/src/app/andela_key.key&cert=/usr/src/app/andela_certificate.crt' -C config/puma.rb
+    # cat /usr/src/app/andela_key.key /usr/src/app/andela_certificate.crt > /usr/src/app/root_bundle.crt
+    # RAILS_ENV=${RAILS_ENV} /usr/local/bin/bundle exec puma -b 'ssl://0.0.0.0:3000?key=/usr/src/app/andela_key.key&cert=/usr/src/app/andela_certificate.crt&verify_mode=none&ca=/usr/src/app/root_bundle.crt' -C config/puma.rb
+    /usr/local/bin/bundle exec passenger start --ssl --environment ${RAILS_ENV} --ssl-certificate "/usr/src/app/andela_certificate.crt" --ssl-certificate-key "/usr/src/app/andela_key.key" --port 3000
 }
 
 # download crt:key file combination from bucket
@@ -39,7 +41,7 @@ setup_ssl(){
 
 copy_db_files() {
   if gcloud auth activate-service-account --key-file=account.json; then
-      gsutil cp gs://${BUCKET_NAME}/login_microservice_databases/vof_login_microservice_${RAILS_ENV}.dump /usr/src/app
+      gsutil cp gs://${BUCKET_NAME}/login_microservice_databases/micro_login_db.dump /usr/src/app
   fi
 }
 
