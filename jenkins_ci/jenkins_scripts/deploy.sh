@@ -256,19 +256,6 @@ spec:
               secretKeyRef:
                   name: vof-${RAILS_ENV}-login-microservice-secrets
                   key: BUCKET_NAME
-        - args: 
-            - /login-service-${RAILS_ENV}
-            - "--default-backend-service=$(POD_NAMESPACE)/login-service-${RAILS_ENV}"
-            - "--default-ssl-certificate=$(POD_NAMESPACE)/tls-certificate"
-            env: 
-              - name: POD_NAME
-                valueFrom: 
-                  fieldRef: 
-                    fieldPath: metadata.name
-              - name: POD_NAMESPACE
-                valueFrom: 
-                  fieldRef: 
-                    fieldPath: metadata.namespace
         ports:
         - containerPort: 443
           name: https
@@ -292,7 +279,8 @@ build_docker_image_and_deploy(){
     if kubectl create secret tls tls-certificate --key /var/lib/jenkins/workspace/andela_key.key --cert /var/lib/jenkins/workspace/andela_certificate.crt; then
       echo 'Created tls certificate'
     fi
-
+    echo ${SANDBOX_RESERVED_IP}
+    echo ${DOMAIN_SANDBOX}
     # create an account.json file for use within the docker image being built
     cat ${SERVICE_KEY} > account.json
     sudo /usr/bin/docker build --build-arg google_client_id=${GOOGLE_CLIENT_ID} --build-arg private_key="${PRIVATE_KEY}" -t gcr.io/${PROJECT_ID}/login-microservice:$GIT_COMMIT .
