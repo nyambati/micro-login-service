@@ -18,6 +18,7 @@ pipeline {
         GOOGLE_CLIENT_SECRET=credentials("GOOGLE_CLIENT_SECRET")
         DOMAIN_PRODUCTION=credentials("DOMAIN_PRODUCTION")
         DOMAIN_STAGING=credentials("DOMAIN_STAGING")
+        DOMAIN_SANDBOX=credentials("DOMAIN_SANDBOX")
         PROJECT_ID=credentials("PROJECT_ID")
         SERVICE_KEY=credentials("SERVICE_KEY")
         SERVICE_ACCOUNT_EMAIL=credentials("SERVICE_ACCOUNT_EMAIL")

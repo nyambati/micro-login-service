@@ -136,6 +136,7 @@ data:
     GOOGLE_CLIENT_SECRET: '$(echo -n ${GOOGLE_CLIENT_SECRET} | base64)'
     DOMAIN_PRODUCTION: '$(echo -n ${DOMAIN_PRODUCTION} | base64)'
     DOMAIN_STAGING: '$(echo -n ${DOMAIN_STAGING} | base64)'
+    DOMAIN_SANDBOX: '$(echo -n ${DOMAIN_SANDBOX} | base64)'
     RAILS_ENV: '$(echo -n ${RAILS_ENV} | base64)'
 EOF
 }
@@ -240,6 +241,11 @@ spec:
               secretKeyRef:
                   name: vof-${RAILS_ENV}-login-microservice-secrets
                   key: DOMAIN_STAGING
+          - name: DOMAIN_SANDBOX
+            valueFrom:
+              secretKeyRef:
+                  name: vof-${RAILS_ENV}-login-microservice-secrets
+                  key: DOMAIN_SANDBOX
           - name: RAILS_ENV
             valueFrom:
               secretKeyRef:
